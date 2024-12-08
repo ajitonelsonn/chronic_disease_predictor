@@ -7,7 +7,12 @@ from PIL import Image
 def load_condition_mapping():
     """Load condition code to description mapping"""
     try:
-        mapping_df = pd.read_csv('data/PRIMARY_CHRONIC_CONDITION_ROLLUP_DESC.csv')
+        # Read the CSV file with explicit dtype for PCC_CODE
+        mapping_df = pd.read_csv('data/PRIMARY_CHRONIC_CONDITION_ROLLUP_DESC.csv',
+                               dtype={'PCC_CODE': float})
+        # Clean up any whitespace in the description
+        mapping_df['PCC_ROLLUP'] = mapping_df['PCC_ROLLUP'].str.strip()
+        # Create dictionary with code as key and description as value
         condition_map = dict(zip(mapping_df['PCC_CODE'], mapping_df['PCC_ROLLUP']))
         return condition_map
     except Exception as e:
