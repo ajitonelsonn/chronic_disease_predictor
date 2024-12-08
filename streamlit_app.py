@@ -7,9 +7,9 @@ from PIL import Image
 def load_models():
     """Load the saved models and encoders"""
     try:
-        model = joblib.load('/models/chronic_disease_model.joblib')
-        scaler = joblib.load('/models/models/scaler.joblib')
-        label_encoder = joblib.load('/models/models/label_encoder.joblib')
+        model = joblib.load('models/chronic_disease_model.joblib')
+        scaler = joblib.load('models/scaler.joblib')
+        label_encoder = joblib.load('models/label_encoder.joblib')
         return model, scaler, label_encoder
     except Exception as e:
         st.error(f"Error loading models: {str(e)}")
