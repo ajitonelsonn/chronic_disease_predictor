@@ -19,3 +19,6 @@ Version 1/
 agents/__pycache__
 helpers/__pycache__
 modules/__pycache__
+__pycache__
+
+/.streamlit/secrets.toml
