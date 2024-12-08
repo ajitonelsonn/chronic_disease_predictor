@@ -1,0 +1,21 @@
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Mac OS generated files
+.DS_Store
+
+#
+a/
+Version 1/
+.vscode
+
+#__pycache__
+agents/__pycache__
+helpers/__pycache__
+modules/__pycache__
