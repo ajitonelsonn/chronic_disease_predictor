@@ -117,7 +117,7 @@ def prepare_features(data, feature_names):
     """Prepare features for model prediction"""
     # Create base features
     features = {
-        'MEM_GENDER_ENCODED': 0 if data['gender'] == "Female" else 1,
+        'MEM_GENDER_ENCODED': 0 if data['gender'] == "Male" else 1,
         'MEM_RACE_ENCODED': {"White": 0, "Black": 1, "Asian": 2, "Other": 3}[data['race']],
         'MEM_ETHNICITY_ENCODED': 1 if data['ethnicity'] == "Hispanic" else 0,
         'PAYER_LOB_ENCODED': 0,
