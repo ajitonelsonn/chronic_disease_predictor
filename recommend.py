@@ -9,18 +9,19 @@ def get_llm_recommendation(condition_data):
         print("\nDebug - Attempting to generate recommendations")
         print(f"Input data: {condition_data}")
         
-        # Get API key 
+        # Get API key from Streamlit secrets
         api_key = st.secrets['api_keys']['togetherapi']
         print(f"API key found: {'Yes' if api_key else 'No'}")
         
         if not api_key:
             raise ValueError("API key not found")
-            
-        # Set environment variable for the API key
-        os.environ['TOGETHER_API_KEY'] = api_key
         
-        # Create Together client with the API key directly
-        client = Together(api_key=os.environ['TOGETHER_API_KEY'])
+        # Set API key as an environment variable
+        os.environ['TOGETHER_API_KEY'] = api_key
+        print("API key set in environment variable")
+        
+        # Create Together client
+        client = Together()
         print("Together client created successfully")
         
         # Construct prompt
@@ -38,7 +39,7 @@ Please provide specific recommendations for:
 
         print(f"\nDebug - Sending prompt to API:\n{prompt}")
         
-        # Make API call using the client instance
+        # Make API call
         response = client.chat.completions.create(
             model="meta-llama/Llama-3.2-3B-Instruct-Turbo",
             messages=[{
@@ -67,6 +68,8 @@ Please provide specific recommendations for:
         st.error(f"Error generating recommendations: {str(e)}")
     
     print("\nDebug - Falling back to default recommendations")
+    return "Unable to generate recommendations at this time. Please try again later."
+
 
 def format_recommendations(llm_output):
     """Format the LLM output into structured recommendations"""
@@ -83,5 +86,25 @@ def format_recommendations(llm_output):
                     formatted_recommendations.append(f"- {cleaned_section}")
         
         return '\n'.join(formatted_recommendations)
-    except:
+    except Exception as e:
+        print(f"Error in formatting recommendations: {str(e)}")
         return llm_output
+
+
+# Example usage
+if __name__ == "__main__":
+    # Example input data
+    condition_data = {
+        "primary_condition": "Liver Disease (Hepatitis Cirrhosis) Post Transplant",
+        "confidence": 0.95,
+        "risk_level": "High",
+        "condition_list": "Diabetes, Hypertension, Anemia"
+    }
+    
+    # Get recommendations
+    recommendations = get_llm_recommendation(condition_data)
+    
+    if recommendations:
+        formatted_recommendations = format_recommendations(recommendations)
+        print("\nFormatted Recommendations:")
+        print(formatted_recommendations)
