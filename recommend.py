@@ -63,7 +63,6 @@ Please provide specific recommendations for:
         st.error(f"Error generating recommendations: {str(e)}")
     
     print("\nDebug - Falling back to default recommendations")
-    return generate_default_recommendations(condition_data)
 
 def format_recommendations(llm_output):
     """Format the LLM output into structured recommendations"""
