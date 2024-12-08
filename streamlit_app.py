@@ -4,6 +4,7 @@ import numpy as np
 import joblib
 from PIL import Image
 
+
 def load_condition_mapping():
     """Load condition code to description mapping"""
     try:
