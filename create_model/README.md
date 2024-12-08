@@ -17,7 +17,7 @@ This project implements a machine learning system to predict chronic disease ris
 
 ## Project Workflow
 
-<div class="mermaid">
+```mermaid
 flowchart TD
     A[Data Loading] --> B[Data Preprocessing]
     B --> C[Feature Engineering]
@@ -25,18 +25,18 @@ flowchart TD
     D --> E[Model Evaluation]
     E --> F[Best Model Selection]
     F --> G[Model Deployment]
-    
+
     B1[Handle Missing Values] --> B
     B2[Encode Categorical Variables] --> B
-    
+
     C1[Create Age Groups] --> C
     C2[Generate Disease Flags] --> C
     C3[Calculate Risk Scores] --> C
-    
+
     D1[Random Forest] --> D
     D2[XGBoost] --> D
     D3[LightGBM] --> D
-</div>
+```
 
 ## Features
 
