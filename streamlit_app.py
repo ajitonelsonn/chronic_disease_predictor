@@ -48,19 +48,61 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
+def get_feature_names():
+    """Get expected feature names in correct order"""
+    return [
+        'MEM_GENDER_ENCODED',
+        'MEM_RACE_ENCODED',
+        'MEM_ETHNICITY_ENCODED',
+        'PAYER_LOB_ENCODED',
+        'SERVICE_SETTING_ENCODED',
+        'DIAGNOSTIC_CONDITION_CATEGORY_DESC_ENCODED',
+        'HAS_HYPERTENSION',
+        'HAS_DIABETES',
+        'HAS_RENAL_FAILURE',
+        'HAS_OTHER_CHRONIC',
+        'HAS_CANCER',
+        'HAS_MENTAL_HEALTH',
+        'HAS_HEART_FAILURE',
+        'HAS_ASTHMA',
+        'HAS_MUSCULOSKELETAL',
+        'HAS_NEUROLOGIC',
+        'HAS_LIVER_DISEASE',
+        'HAS_DEMENTIA',
+        'HAS_CAD',
+        'HAS_HYPERTENSION_AND_DIABETES',
+        'HAS_HYPERTENSION_AND_HEART_FAILURE',
+        'HAS_DIABETES_AND_RENAL_FAILURE',
+        'HAS_HEART_FAILURE_AND_RENAL_FAILURE',
+        'HAS_MENTAL_HEALTH_AND_NEUROLOGIC',
+        'HAS_LIVER_DISEASE_AND_RENAL_FAILURE',
+        'MEM_AGE_NUMERIC',
+        'WEIGHTED_RISK_SCORE'
+    ]
+
 def load_models():
     """Load the saved model, scaler, and label encoder"""
     try:
-        model = joblib.load('model/best_chronic_disease_model.joblib')
+        model_data = joblib.load('model/best_chronic_disease_model.joblib')
         scaler = joblib.load('model/feature_scaler.joblib')
         label_encoder = joblib.load('model/label_encoder.joblib')
-        return model, scaler, label_encoder
+        
+        # Handle both new and old model formats
+        if isinstance(model_data, dict):
+            model = model_data['model']
+            feature_names = model_data.get('feature_names', get_feature_names())
+        else:
+            model = model_data
+            feature_names = get_feature_names()
+            
+        return model, scaler, label_encoder, feature_names
     except Exception as e:
         st.error(f"Error loading models: {str(e)}")
-        return None, None, None
+        return None, None, None, None
 
-def prepare_features(data):
+def prepare_features(data, feature_names):
     """Prepare features for model prediction"""
+    # Create base features
     features = {
         'MEM_GENDER_ENCODED': 1 if data['gender'] == "Female" else 0,
         'MEM_RACE_ENCODED': {"White": 0, "Black": 1, "Asian": 2, "Other": 3}[data['race']],
@@ -68,6 +110,7 @@ def prepare_features(data):
         'PAYER_LOB_ENCODED': 0,
         'SERVICE_SETTING_ENCODED': 0,
         'DIAGNOSTIC_CONDITION_CATEGORY_DESC_ENCODED': 0,
+        'MEM_AGE_NUMERIC': data['age'],
         
         # Disease flags
         'HAS_HYPERTENSION': 1 if 'Hypertension' in data['conditions'] else 0,
@@ -82,10 +125,7 @@ def prepare_features(data):
         'HAS_NEUROLOGIC': 1 if 'Neurologic' in data['conditions'] else 0,
         'HAS_LIVER_DISEASE': 1 if 'Liver Disease' in data['conditions'] else 0,
         'HAS_DEMENTIA': 1 if 'Dementia' in data['conditions'] else 0,
-        'HAS_CAD': 1 if 'CAD' in data['conditions'] else 0,
-        
-        # Basic metrics
-        'MEM_AGE_NUMERIC': data['age'],
+        'HAS_CAD': 1 if 'CAD' in data['conditions'] else 0
     }
     
     # Add condition combinations
@@ -98,7 +138,7 @@ def prepare_features(data):
         'HAS_LIVER_DISEASE_AND_RENAL_FAILURE': features['HAS_LIVER_DISEASE'] * features['HAS_RENAL_FAILURE']
     })
     
-    # Add weighted risk score
+    # Calculate weighted risk score
     features['WEIGHTED_RISK_SCORE'] = sum([
         3 * (features['HAS_HEART_FAILURE'] + features['HAS_RENAL_FAILURE'] + features['HAS_CANCER']),
         2 * (features['HAS_LIVER_DISEASE'] + features['HAS_HYPERTENSION'] + features['HAS_DIABETES'] + 
@@ -107,27 +147,39 @@ def prepare_features(data):
              features['HAS_NEUROLOGIC'] + features['HAS_OTHER_CHRONIC'])
     ])
     
-    return pd.DataFrame([features])
+    # Create DataFrame with correct feature order
+    features_df = pd.DataFrame([features])
+    
+    # Ensure all required features exist and are in correct order
+    for feature in feature_names:
+        if feature not in features_df.columns:
+            features_df[feature] = 0
+            
+    return features_df[feature_names]
 
 def predict_conditions(features, model, scaler, label_encoder):
     """Make predictions using the model"""
-    # Scale features
-    features_scaled = scaler.transform(features)
-    
-    # Get prediction and probabilities
-    prediction = model.predict(features_scaled)[0]
-    probabilities = model.predict_proba(features_scaled)[0]
-    
-    # Get top 3 predictions
-    top_3_indices = probabilities.argsort()[-3:][::-1]
-    top_3_probs = probabilities[top_3_indices]
-    top_3_conditions = label_encoder.inverse_transform(top_3_indices)
-    
-    return {
-        'primary_condition': top_3_conditions[0],
-        'confidence': top_3_probs[0],
-        'top_3_conditions': list(zip(top_3_conditions, top_3_probs))
-    }
+    try:
+        # Scale features
+        features_scaled = scaler.transform(features)
+        
+        # Get prediction and probabilities
+        prediction = model.predict(features_scaled)[0]
+        probabilities = model.predict_proba(features_scaled)[0]
+        
+        # Get top 3 predictions
+        top_3_indices = probabilities.argsort()[-3:][::-1]
+        top_3_probs = probabilities[top_3_indices]
+        top_3_conditions = label_encoder.inverse_transform(top_3_indices)
+        
+        return {
+            'primary_condition': top_3_conditions[0],
+            'confidence': top_3_probs[0],
+            'top_3_conditions': list(zip(top_3_conditions, top_3_probs)),
+            'error': None
+        }
+    except Exception as e:
+        return {'error': str(e)}
 
 def main():
     # Header
@@ -141,7 +193,7 @@ def main():
     """, unsafe_allow_html=True)
 
     # Load models
-    model, scaler, label_encoder = load_models()
+    model, scaler, label_encoder, feature_names = load_models()
     if model is None:
         return
 
@@ -172,66 +224,71 @@ def main():
 
     # Predict button
     if st.button("Generate Prediction"):
-        # Prepare data
-        input_data = {
-            'age': age,
-            'gender': gender,
-            'race': race,
-            'ethnicity': ethnicity,
-            'conditions': conditions
-        }
-        
-        # Generate features
-        features = prepare_features(input_data)
-        
-        # Make prediction
-        results = predict_conditions(features, model, scaler, label_encoder)
-        
-        # Display results
-        st.markdown("<div class='prediction-box'><h3>Prediction Results</h3></div>", 
-                   unsafe_allow_html=True)
-        
-        # Metrics
-        col1, col2, col3 = st.columns(3)
-        
-        with col1:
-            st.metric("Primary Predicted Condition", str(results['primary_condition']))
-        
-        with col2:
-            st.metric("Confidence", f"{results['confidence']*100:.1f}%")
-        
-        with col3:
-            risk_level = "High" if len(conditions) >= 3 else "Medium" if len(conditions) >= 1 else "Low"
-            st.metric("Risk Level", risk_level)
-        
-        # Detailed predictions
-        st.markdown("#### Top 3 Most Likely Conditions")
-        for condition, prob in results['top_3_conditions']:
-            st.markdown(f"- **{condition}**: {prob*100:.1f}%")
-        
-        # Risk assessment and recommendations
-        st.markdown("#### Recommendations")
-        if risk_level == "High":
-            st.warning("""
-                - Schedule immediate consultation with healthcare provider
-                - Review current medications and treatment plans
-                - Monitor symptoms closely
-                - Consider lifestyle modifications as recommended by your doctor
-            """)
-        elif risk_level == "Medium":
-            st.info("""
-                - Schedule regular check-ups
-                - Monitor your condition
-                - Maintain a healthy lifestyle
-                - Follow prescribed treatment plans
-            """)
-        else:
-            st.success("""
-                - Continue regular health check-ups
-                - Maintain healthy lifestyle habits
-                - Stay active and maintain a balanced diet
-                - Monitor any changes in health
-            """)
+        with st.spinner("Analyzing patient data..."):
+            # Prepare data
+            input_data = {
+                'age': age,
+                'gender': gender,
+                'race': race,
+                'ethnicity': ethnicity,
+                'conditions': conditions
+            }
+            
+            # Generate features
+            features = prepare_features(input_data, feature_names)
+            
+            # Make prediction
+            results = predict_conditions(features, model, scaler, label_encoder)
+            
+            if results.get('error'):
+                st.error(f"Error making prediction: {results['error']}")
+                return
+            
+            # Display results
+            st.markdown("<div class='prediction-box'><h3>Prediction Results</h3></div>", 
+                       unsafe_allow_html=True)
+            
+            # Metrics
+            col1, col2, col3 = st.columns(3)
+            
+            with col1:
+                st.metric("Primary Predicted Condition", str(results['primary_condition']))
+            
+            with col2:
+                st.metric("Confidence", f"{results['confidence']*100:.1f}%")
+            
+            with col3:
+                risk_level = "High" if len(conditions) >= 3 else "Medium" if len(conditions) >= 1 else "Low"
+                st.metric("Risk Level", risk_level)
+            
+            # Detailed predictions
+            st.markdown("#### Top 3 Most Likely Conditions")
+            for condition, prob in results['top_3_conditions']:
+                st.markdown(f"- **{condition}**: {prob*100:.1f}%")
+            
+            # Risk assessment and recommendations
+            st.markdown("#### Recommendations")
+            if risk_level == "High":
+                st.warning("""
+                    - Schedule immediate consultation with healthcare provider
+                    - Review current medications and treatment plans
+                    - Monitor symptoms closely
+                    - Consider lifestyle modifications as recommended by your doctor
+                """)
+            elif risk_level == "Medium":
+                st.info("""
+                    - Schedule regular check-ups
+                    - Monitor your condition
+                    - Maintain a healthy lifestyle
+                    - Follow prescribed treatment plans
+                """)
+            else:
+                st.success("""
+                    - Continue regular health check-ups
+                    - Maintain healthy lifestyle habits
+                    - Stay active and maintain a balanced diet
+                    - Monitor any changes in health
+                """)
 
 if __name__ == "__main__":
     main()
