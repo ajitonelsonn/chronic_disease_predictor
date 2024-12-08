@@ -4,6 +4,20 @@ import numpy as np
 import joblib
 from PIL import Image
 
+def load_condition_mapping():
+    """Load condition code to description mapping"""
+    try:
+        mapping_df = pd.read_csv('data/PRIMARY_CHRONIC_CONDITION_ROLLUP_DESC.csv')
+        condition_map = dict(zip(mapping_df['PCC_CODE'], mapping_df['PCC_ROLLUP']))
+        return condition_map
+    except Exception as e:
+        st.error(f"Error loading condition mapping: {str(e)}")
+        return {}
+
+def get_condition_name(code, condition_map):
+    """Convert condition code to actual condition name"""
+    return condition_map.get(float(code), f"Unknown Condition ({code})")
+
 def load_models():
     """Load the saved models and encoders"""
     try:
@@ -18,6 +32,9 @@ def load_models():
 def predict_risk(patient_data, model, scaler, label_encoder):
     """Make predictions using the loaded model"""
     try:
+        # Load condition mapping
+        condition_map = load_condition_mapping()
+        
         # Convert to DataFrame
         patient_df = pd.DataFrame([patient_data])
         
@@ -34,13 +51,15 @@ def predict_risk(patient_data, model, scaler, label_encoder):
         top_3_labels = label_encoder.inverse_transform(top_3_indices)
         
         return {
-            'predicted_condition': label_encoder.inverse_transform([prediction])[0],
+            'predicted_condition': get_condition_name(label_encoder.inverse_transform([prediction])[0], condition_map),
             'confidence': f"{max(probabilities)*100:.1f}%",
             'risk_level': 'High' if max(probabilities) > 0.7 else 
                          'Medium' if max(probabilities) > 0.4 else 'Low',
             'top_3_predictions': [
-                {'condition': str(label), 
-                 'probability': f"{prob*100:.1f}%"}
+                {
+                    'condition': get_condition_name(label, condition_map),
+                    'probability': f"{prob*100:.1f}%"
+                }
                 for label, prob in zip(top_3_labels, top_3_probs)
             ]
         }
@@ -146,16 +165,25 @@ def main():
         # Display top 3 predictions
         st.subheader("Alternative Predictions")
         for pred in result['top_3_predictions']:
-            st.write(f"Condition {pred['condition']}: {pred['probability']} probability")
+            st.write(f"{pred['condition']}: {pred['probability']} probability")
         
-        # Recommendations based on risk level
+        # Recommendations based on risk level and condition
         st.subheader("Recommendations")
         if result['risk_level'] == 'High':
             st.warning("⚠️ Immediate medical consultation recommended")
+            st.write("• Schedule an appointment with your healthcare provider")
+            st.write("• Monitor symptoms closely")
+            st.write("• Review and maintain medication compliance if applicable")
         elif result['risk_level'] == 'Medium':
-            st.info("ℹ️ Regular check-ups and lifestyle modifications recommended")
+            st.info("ℹ️ Regular monitoring recommended")
+            st.write("• Schedule routine check-ups")
+            st.write("• Maintain healthy lifestyle habits")
+            st.write("• Consider preventive measures")
         else:
-            st.success("✅ Continue maintaining healthy lifestyle habits")
+            st.success("✅ Continue maintaining healthy habits")
+            st.write("• Regular exercise")
+            st.write("• Balanced diet")
+            st.write("• Regular check-ups")
 
 if __name__ == "__main__":
     main()
