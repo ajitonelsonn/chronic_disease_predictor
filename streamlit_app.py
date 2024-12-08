@@ -4,6 +4,7 @@ import numpy as np
 import joblib
 from PIL import Image
 
+
 # Set page configuration
 st.set_page_config(
     page_title="Chronic Disease Risk Predictor",
