@@ -5,23 +5,41 @@ import os
 def get_llm_recommendation(condition_data):
     """Generate recommendations using Llama model based on condition data"""
     try:
-        # Debug print
-        print("\nDebug - Attempting to generate recommendations")
-        print(f"Input data: {condition_data}")
+        # Debug print with environment info
+        print("\nDebug - Environment Check")
+        print("Checking deployment environment...")
         
-        # Get API key 
-        api_key = st.secrets['api_keys']['togetherapi']
+        # Try getting API key from different sources
+        api_key = None
+        
+        # First try getting from Streamlit secrets
+        try:
+            api_key = st.secrets['api_keys']['togetherapi']
+            print("Found API key in Streamlit secrets")
+        except Exception as e:
+            print(f"Could not get API key from secrets: {str(e)}")
+            
+        # If not found in secrets, try environment variable
+        if not api_key:
+            api_key = os.getenv('TOGETHER_API_KEY')
+            print("Checking environment variable for API key")
+            
+        if not api_key:
+            raise ValueError("API key not found in any configuration source")
+            
         print(f"API key found: {'Yes' if api_key else 'No'}")
         
-        if not api_key:
-            raise ValueError("API key not found")
-            
-        # Set environment variable for the API key
-        os.environ['TOGETHER_API_KEY'] = api_key
-        
-        # Create Together client with the API key directly
-        client = Together(api_key=os.environ['TOGETHER_API_KEY'])
-        print("Together client created successfully")
+        # Initialize Together client
+        try:
+            # First try direct initialization
+            client = Together(api_key=api_key)
+            print("Together client created successfully with direct initialization")
+        except Exception as e:
+            print(f"Direct initialization failed: {str(e)}")
+            # Fallback to environment variable
+            os.environ['TOGETHER_API_KEY'] = api_key
+            client = Together()
+            print("Together client created with environment variable")
         
         # Construct prompt
         prompt = f"""Given a patient with (maximum 250 words):
@@ -38,38 +56,49 @@ Please provide specific recommendations for:
 
         print(f"\nDebug - Sending prompt to API:\n{prompt}")
         
-        # Make API call using the client instance
-        response = client.chat.completions.create(
-            model="meta-llama/Llama-3.2-3B-Instruct-Turbo",
-            messages=[{
-                "role": "system", 
-                "content": "You are a medical AI assistant providing evidence-based health recommendations."
-            }, {
-                "role": "user", 
-                "content": prompt
-            }],
-            temperature=0.7,
-            max_tokens=500
-        )
-        
-        print("\nDebug - API response received")
-        print(f"Response type: {type(response)}")
-        print(f"Response content: {response}")
-        
-        if hasattr(response, 'choices') and len(response.choices) > 0:
-            recommendations = response.choices[0].message.content
-            print(f"\nDebug - Generated recommendations:\n{recommendations}")
-            return recommendations
+        # Make API call with error handling
+        try:
+            response = client.chat.completions.create(
+                model="meta-llama/Llama-3.2-3B-Instruct-Turbo",
+                messages=[{
+                    "role": "system", 
+                    "content": "You are a medical AI assistant providing evidence-based health recommendations."
+                }, {
+                    "role": "user", 
+                    "content": prompt
+                }],
+                temperature=0.7,
+                max_tokens=500
+            )
+            
+            print("\nDebug - API response received")
+            print(f"Response type: {type(response)}")
+            
+            if hasattr(response, 'choices') and len(response.choices) > 0:
+                recommendations = response.choices[0].message.content
+                print(f"\nDebug - Generated recommendations:\n{recommendations}")
+                return recommendations
+            else:
+                raise ValueError("No valid response received from API")
+                
+        except Exception as api_error:
+            print(f"\nDebug - API call error: {str(api_error)}")
+            raise api_error
             
     except Exception as e:
         print(f"\nDebug - Error occurred: {str(e)}")
         print(f"Error type: {type(e)}")
         st.error(f"Error generating recommendations: {str(e)}")
+        return None
     
     print("\nDebug - Falling back to default recommendations")
+    return None
 
 def format_recommendations(llm_output):
     """Format the LLM output into structured recommendations"""
+    if not llm_output:
+        return "Unable to generate recommendations. Please try again."
+        
     try:
         # Split recommendations into sections
         sections = llm_output.split('\n')
