@@ -1,5 +1,6 @@
 from together import Together
 import streamlit as st
+import os
 
 def get_llm_recommendation(condition_data):
     """Generate recommendations using Llama model based on condition data"""
@@ -12,12 +13,14 @@ def get_llm_recommendation(condition_data):
         api_key = st.secrets['api_keys']['togetherapi']
         print(f"API key found: {'Yes' if api_key else 'No'}")
         
-        
         if not api_key:
             raise ValueError("API key not found")
             
-        # Create Together client
-        client = Together(api_key=api_key)
+        # Set environment variable for the API key
+        os.environ['TOGETHER_API_KEY'] = api_key
+        
+        # Create Together client with the API key directly
+        client = Together(api_key=os.environ['TOGETHER_API_KEY'])
         print("Together client created successfully")
         
         # Construct prompt
@@ -35,7 +38,7 @@ Please provide specific recommendations for:
 
         print(f"\nDebug - Sending prompt to API:\n{prompt}")
         
-        # Make API call
+        # Make API call using the client instance
         response = client.chat.completions.create(
             model="meta-llama/Llama-3.2-3B-Instruct-Turbo",
             messages=[{
