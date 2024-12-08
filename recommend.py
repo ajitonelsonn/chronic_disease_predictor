@@ -9,7 +9,7 @@ def get_llm_recommendation(condition_data):
         print(f"Input data: {condition_data}")
         
         # Get API key 
-        api_key = st.secrets["credentials"]["TOGETHER_API_KEY"]
+        api_key = st.secrets.credentials.TOGETHER_API_KEY
         print(f"API key found: {'Yes' if api_key else 'No'}")
         
         if not api_key:
