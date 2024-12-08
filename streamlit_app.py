@@ -157,9 +157,25 @@ def prepare_features(data, feature_names):
             
     return features_df[feature_names]
 
+def load_condition_mapping():
+    """Load the condition code to description mapping"""
+    try:
+        mapping_df = pd.read_csv('data/PRIMARY_CHRONIC_CONDITION_ROLLUP_DESC.csv')
+        return dict(zip(mapping_df['PCC_CODE'], mapping_df['PCC_ROLLUP']))
+    except Exception as e:
+        st.error(f"Error loading condition mapping: {str(e)}")
+        return {}
+
+def get_condition_name(code, condition_map):
+    """Convert condition code to actual condition name"""
+    return condition_map.get(float(code), f"Unknown ({code})")
+
 def predict_conditions(features, model, scaler, label_encoder):
     """Make predictions using the model"""
     try:
+        # Load condition mapping
+        condition_map = load_condition_mapping()
+        
         # Scale features
         features_scaled = scaler.transform(features)
         
@@ -172,10 +188,15 @@ def predict_conditions(features, model, scaler, label_encoder):
         top_3_probs = probabilities[top_3_indices]
         top_3_conditions = label_encoder.inverse_transform(top_3_indices)
         
+        # Map condition codes to descriptions
+        primary_condition = get_condition_name(top_3_conditions[0], condition_map)
+        top_3_mapped = [(get_condition_name(cond, condition_map), prob) 
+                       for cond, prob in zip(top_3_conditions, top_3_probs)]
+        
         return {
-            'primary_condition': top_3_conditions[0],
+            'primary_condition': primary_condition,
             'confidence': top_3_probs[0],
-            'top_3_conditions': list(zip(top_3_conditions, top_3_probs)),
+            'top_3_conditions': top_3_mapped,
             'error': None
         }
     except Exception as e:
@@ -237,30 +258,23 @@ def main():
             # Generate features
             features = prepare_features(input_data, feature_names)
             
-            # Make prediction
-            results = predict_conditions(features, model, scaler, label_encoder)
-            
-            if results.get('error'):
-                st.error(f"Error making prediction: {results['error']}")
-                return
-            
             # Display results
             st.markdown("<div class='prediction-box'><h3>Prediction Results</h3></div>", 
                        unsafe_allow_html=True)
-            
+
             # Metrics
             col1, col2, col3 = st.columns(3)
-            
+
             with col1:
-                st.metric("Primary Predicted Condition", str(results['primary_condition']))
-            
+                st.metric("Primary Predicted Condition", results['primary_condition'])
+
             with col2:
                 st.metric("Confidence", f"{results['confidence']*100:.1f}%")
-            
+
             with col3:
                 risk_level = "High" if len(conditions) >= 3 else "Medium" if len(conditions) >= 1 else "Low"
                 st.metric("Risk Level", risk_level)
-            
+
             # Detailed predictions
             st.markdown("#### Top 3 Most Likely Conditions")
             for condition, prob in results['top_3_conditions']:
