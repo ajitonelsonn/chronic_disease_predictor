@@ -51,9 +51,9 @@ st.markdown("""
 def load_models():
     """Load the saved model, scaler, and label encoder"""
     try:
-        model = joblib.load('best_chronic_disease_model.joblib')
-        scaler = joblib.load('feature_scaler.joblib')
-        label_encoder = joblib.load('label_encoder.joblib')
+        model = joblib.load('model/best_chronic_disease_model.joblib')
+        scaler = joblib.load('model/feature_scaler.joblib')
+        label_encoder = joblib.load('model/label_encoder.joblib')
         return model, scaler, label_encoder
     except Exception as e:
         st.error(f"Error loading models: {str(e)}")
