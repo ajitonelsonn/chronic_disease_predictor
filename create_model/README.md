@@ -1,21 +1,31 @@
-# Chronic Disease Risk Prediction Model
-
 <div align="center">
   <img src="https://raw.githubusercontent.com/ajitonelsonn/chronic_disease_predictor/main/Images/1.png" alt="LAFAEK AI" width="400"/>
 </div>
 
-## Overview
+# Chronic Disease Risk Prediction Model
 
-This project implements a machine learning system to predict chronic disease risk based on patient data. It compares three different models (Random Forest, XGBoost with GPU, and LightGBM) to find the most effective approach for disease prediction.
+## 🔬 Model Development Process
 
-## Technical Stack
+This repository contains the development of a machine learning system for predicting chronic disease risks using GPU-accelerated model training.
 
-- **Python Libraries**: pandas, numpy, scikit-learn, xgboost, lightgbm
-- **Visualization**: matplotlib, seaborn
-- **Environment**: Google Colab (GPU-enabled)
-- **Data Storage**: Google Drive
+### Dataset Overview
 
-## Project Workflow
+- **Size**: 450,000 patients with 37.5M records
+- **Scope**: Data from Hawaii and California
+- **Format**: Parquet files (~3.5GB uncompressed)
+
+### Data Integration
+
+Combined four key datasets:
+
+1. **Claims_Enrollment**: Patient enrollment and chronic conditions
+2. **Claims_Services**: Medical service history
+3. **Claims_Member**: Demographic information
+4. **Claims_Provider**: Healthcare provider details
+
+## 🔄 Project Workflow
+
+### Development Pipeline
 
 ```mermaid
 flowchart TD
@@ -38,114 +48,97 @@ flowchart TD
     D3[LightGBM] --> D
 ```
 
-## Features
+### Feature Engineering Process
 
-- Multi-model comparison (Random Forest, XGBoost, LightGBM)
-- Comprehensive feature engineering
-- Risk score calculation
-- Model performance visualization
-- Patient-level prediction system
+```mermaid
+graph TD
+    A[Raw Data] --> B[Basic Features]
+    B --> C[Advanced Features]
+    C --> D[Risk Scores]
 
-## Dataset Structure
+    subgraph "Basic Features"
+    B1[Demographics] --> B
+    B2[Medical History] --> B
+    B3[Service Patterns] --> B
+    end
 
-The model uses three main datasets:
+    subgraph "Advanced Features"
+    C1[Disease Combinations] --> C
+    C2[Age-Condition Interactions] --> C
+    C3[Clinical Patterns] --> C
+    end
 
-1. **Claims_Enrollment**: Patient enrollment and chronic condition data
-2. **Claims_Services**: Medical service history
-3. **Claims_Member**: Demographic information
-
-## Feature Engineering Process
-
-1. **Basic Features**
-
-   - Demographic information (age, gender, race, ethnicity)
-   - Medical service settings
-   - Diagnostic conditions
-
-2. **Advanced Features**
-
-   - Age groups
-   - Disease combination flags
-   - Risk score calculations
-   - Age-condition interactions
-
-3. **Risk Categories**
-   - Low
-   - Moderate
-   - High
-   - Very High
-
-## Model Training and Evaluation
-
-The notebook implements a comprehensive model training pipeline:
-
-1. **Data Preparation**
-
-   - Feature scaling
-   - Train-test split
-   - Class weight balancing
-
-2. **Model Training**
-
-   - Random Forest Classifier
-   - XGBoost with GPU acceleration
-   - LightGBM with GPU acceleration
-
-3. **Evaluation Metrics**
-   - Accuracy
-   - Precision
-   - Recall
-   - F1-Score
-   - ROC-AUC
-
-## Prediction System
-
-The system provides:
-
-- Individual patient risk assessment
-- Top 3 most likely conditions
-- Confidence scores
-- Patient risk profiles
-
-## Usage
-
-```python
-# Load required libraries
-import pandas as pd
-import numpy as np
-from sklearn.ensemble import RandomForestClassifier
-from xgboost import XGBClassifier
-import lightgbm as lgb
-
-# Load the model
-loaded_model = joblib.load('best_chronic_disease_model.joblib')
-loaded_scaler = joblib.load('feature_scaler.joblib')
-loaded_label_encoder = joblib.load('label_encoder.joblib')
-
-# Make predictions
-predictions = predict_patient_condition(patient_data)
+    subgraph "Risk Analysis"
+    D1[Weighted Scoring] --> D
+    D2[Risk Categories] --> D
+    end
 ```
 
-## Model Performance
+### Model Training Details
 
-The notebook compares the performance of three models:
+Compared three models using A100 GPU acceleration:
 
-- Random Forest
-- XGBoost with GPU
-- LightGBM
+| Model         | Accuracy | Precision | Recall | F1-Score |
+| ------------- | -------- | --------- | ------ | -------- |
+| Random Forest | 74.67%   | 70.41%    | 52.86% | 33762.05 |
+| XGBoost       | 81.76%   | 57.59%    | 59.66% | 33762.05 |
+| LightGBM      | 77.72%   | 73.18%    | 56.16% | 33762.05 |
 
-Performance metrics include:
+### XGBoost Configuration (Best Model)
 
-- Overall accuracy
-- Class-specific precision and recall
-- Feature importance analysis
-- Confusion matrices
+```python
+  xgb_model = XGBClassifier(
+        n_estimators=300,
+        max_depth=10,
+        learning_rate=0.01,
+        subsample=0.8,
+        colsample_bytree=0.8,
+        min_child_weight=3,
+        scale_pos_weight=1,
+        tree_method='gpu_hist',
+        predictor='gpu_predictor',
+        eval_metric=['mlogloss', 'merror'],
+        objective='multi:softprob',
+        random_state=42
+    )
+```
 
-## Author
+### Key Features Used
 
-Developed by **Ajito Nelson Lucio da Costa** as part of the **Lokahi Innovation in Healthcare Hackathon**.
+1. **Demographic Features**
 
-## Connect with Me
+   - Age, gender, race, ethnicity
+   - Geographic location
+   - Insurance type
+
+2. **Clinical Indicators**
+
+   - Existing conditions
+   - Service history
+   - Diagnostic codes
+
+3. **Derived Features**
+   - Disease combinations
+   - Risk scores
+   - Age-condition interactions
+
+### Model Output
+
+The model provides:
+
+- Primary condition prediction
+- Confidence scores
+- Top 3 most likely conditions
+- Risk level assessment
+
+## 🛠 Development Environment
+
+- **Google Colab**: High-RAM runtime with A100 GPU
+- **Storage**: Google Drive integration
+
+## 👥 Author
+
+Ajito Nelson Lucio da Costa
 
 [![Facebook](https://img.shields.io/badge/Facebook-%40ajitonelsonn-blue)](https://facebook.com/kharu.kharu89/)
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-%40ajitonelson-blue)](https://linkedin.com/in/ajitonelson)

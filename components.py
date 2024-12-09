@@ -6,9 +6,6 @@ def navigation():
     st.markdown("""
         <div class="nav-menu">
             <a href="#" class="nav-link">🏠 Home</a>
-            <a href="#about" class="nav-link">ℹ️ About</a>
-            <a href="#contact" class="nav-link">📞 Contact</a>
-            <a href="#help" class="nav-link">❓ Help</a>
         </div>
     """, unsafe_allow_html=True)
 

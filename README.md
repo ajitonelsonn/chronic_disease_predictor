@@ -14,7 +14,6 @@
 - **Interactive UI**: Modern, user-friendly interface built with Streamlit
 - **Real-time Analysis**: Instant risk assessment and recommendations
 - **AI Recommendations**: Personalized health recommendations using LLM (Together AI)
-- **Comprehensive Reports**: Detailed analysis of patient risk factors
 
 ---
 
@@ -25,7 +24,7 @@
 - **ML Framework**: XGBoost (v2.1.3)
 - **Data Processing**: Pandas (v2.2.3), NumPy (v2.1.3)
 - **Model Serialization**: Joblib (v1.4.2)
-- **Recommendations**: Together AI Integration
+- **Recommendations**: Together AI Integration (Llama-3.2-3B-Instruct-Turbo)
 
 ---
 
@@ -72,15 +71,77 @@ Ensure you have:
 
 ---
 
-## 📊 Model Performance
+## 🤖 Model Development
 
-```plaintext
-Model Performance Metrics:
-- Accuracy: 81.76%
-- Average Precision: 57.59%
-- Average Recall: 59.66%
-- Average F1-Score: 33762.05
+Detailed documentation of our model development process can be found in our [Jupyter Notebook](create_model/Chronic_Disease_Risk_Prediction_Model.ipynb) or [Create Model](create_model/).
+
+### Data Processing
+
+- Processed 450,000 patient records with 37.5M entries
+- Integrated data from multiple sources:
+  - Member demographics
+  - Enrollment history
+  - Service records
+  - Provider information
+
+### Model Selection Process
+
+We evaluated three different models:
+
+| Model         | Accuracy | Precision | Recall | F1-Score |
+| ------------- | -------- | --------- | ------ | -------- |
+| Random Forest | 74.67%   | 70.41%    | 52.86% | 33762.05 |
+| XGBoost       | 81.76%   | 57.59%    | 59.66% | 33762.05 |
+| LightGBM      | 77.72%   | 73.18%    | 56.16% | 33762.05 |
+
+### Why XGBoost?
+
+We selected XGBoost as our final model due to:
+
+- Highest accuracy (81.76%)
+- Better handling of complex feature relationships
+- Efficient prediction time
+- Good balance of performance metrics
+
+### Feature Engineering
+
+Key features used in the model:
+
+```python
+features = [
+    'MEM_GENDER_ENCODED',
+    'MEM_RACE_ENCODED',
+    'MEM_ETHNICITY_ENCODED',
+    'MEM_AGE_NUMERIC',
+    'DIAGNOSTIC_CONDITION_CATEGORY_DESC_ENCODED',
+    # Disease flags
+    'HAS_HYPERTENSION',
+    'HAS_DIABETES',
+    'HAS_RENAL_FAILURE',
+    # ... and more
+]
 ```
+
+### Model Training Process
+
+1. **Data Preparation**
+
+   - Feature encoding
+   - Handling missing values
+   - Data normalization
+
+2. **Model Development**
+
+   - Cross-validation
+   - Hyperparameter tuning
+   - Performance evaluation
+
+3. **Model Optimization**
+   - Feature importance analysis
+   - Model compression
+   - Inference optimization
+
+For detailed implementation and analysis, check our [model development notebook](create_model/Chronic_Disease_Risk_Prediction_Model.ipynb).
 
 ---
 
