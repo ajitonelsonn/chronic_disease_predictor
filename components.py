@@ -2,12 +2,16 @@ import streamlit as st
 from datetime import datetime
 
 def navigation():
-    """Create navigation menu"""
-    st.markdown("""
-        <div class="nav-menu">
-            <a href="#" class="nav-link">🏠 Home</a>
-        </div>
-    """, unsafe_allow_html=True)
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        if st.button("🏠 Home", use_container_width=True):
+            st.switch_page("streamlit_app.py")
+            
+    with col2:
+        if st.button("📊 Dashboard", use_container_width=True):
+            st.switch_page("pages/dashboard.py")
 
 def footer():
     """Create footer section"""
