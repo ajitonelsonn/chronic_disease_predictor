@@ -242,15 +242,15 @@ def process_and_save_results(results, patient_data, risk_level):
     
     with progress_placeholder.container():
         # Analysis phase - 30%
-        st.markdown("<div class='progress-label'>Analyzing results...</div>", unsafe_allow_html=True)
+        st.markdown("<div class='progress-label'>Generating recommendations...</div>", unsafe_allow_html=True)
         analysis_progress = st.progress(0)
-        for i in range(30):
+        for i in range(100):
             analysis_progress.progress(i + 1)
             time.sleep(0.01)
         
         # Recommendation phase - 30%
-        st.markdown("<div class='progress-label'>Generating recommendations...</div>", unsafe_allow_html=True)
-        recommendation_progress = st.progress(0)
+        #st.markdown("<div class='progress-label'>Generating recommendations...</div>", unsafe_allow_html=True)
+        ##recommendation_progress = st.progress(0)
         condition_data = {
             'primary_condition': results['primary_condition'],
             'confidence': results['confidence'],
@@ -259,9 +259,9 @@ def process_and_save_results(results, patient_data, risk_level):
                                        for cond, prob in results['top_3_conditions']])
         }
         recommendations = get_llm_recommendation(condition_data)
-        for i in range(30):
-            recommendation_progress.progress(i + 1)
-            time.sleep(0.01)
+        #for i in range(30):
+        #    recommendation_progress.progress(i + 1)
+        #    time.sleep(0.01)
         
         # Database save phase - 40%
         st.markdown("<div class='progress-label'>Saving to database...</div>", unsafe_allow_html=True)
@@ -271,7 +271,7 @@ def process_and_save_results(results, patient_data, risk_level):
             prediction_results=results,
             recommendations=recommendations
         )
-        for i in range(40):
+        for i in range(60):
             save_progress.progress(i + 1)
             time.sleep(0.01)
         
@@ -311,12 +311,6 @@ def main():
     model, scaler, label_encoder, feature_names = load_models()
     if model is None:
         return
-
-    # Show New Prediction button if currently showing prediction
-    if st.session_state.show_prediction:
-        if st.button("🔄 New Prediction"):
-            st.session_state.show_prediction = False
-            st.rerun()
 
     # Show form only if not showing prediction
     if not st.session_state.show_prediction:
@@ -401,7 +395,36 @@ def main():
                             st.success(recommendations)
                         
                         if save_success:
-                            st.success("Prediction successfully!")
+                            st.snow()
+                            st.markdown("""
+                    <style>
+                    .new-prediction-link {
+                        display: block;
+                        background-color: #6772e5;
+                        color: white !important;
+                        padding: 0.5rem 2rem;
+                        font-size: 1.1rem;
+                        font-weight: 500;
+                        border-radius: 0.5rem;
+                        border: none;
+                        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                        transition: all 0.2s ease;
+                        width: 100%;
+                        margin-top: 2rem;
+                        text-align: center;
+                        text-decoration: none !important;
+                    }
+                    .new-prediction-link:hover {
+                        background-color: #5563d9;
+                        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+                        transform: translateY(-1px);
+                        text-decoration: none !important;
+                    }
+                    </style>
+                    <a href="/" class="new-prediction-link" target="_self">🔄 New Prediction</a>
+                """, unsafe_allow_html=True)
+
+                            
                     else:
                         st.error("Unable to generate recommendations. Please try again.")
             except Exception as e:
