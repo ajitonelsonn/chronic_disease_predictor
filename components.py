@@ -7,6 +7,9 @@ def navigation():
     
     with col1:
         if st.button("🏠 Home", use_container_width=True):
+            # Reset all session state variables
+            for key in st.session_state.keys():
+                del st.session_state[key]
             st.switch_page("streamlit_app.py")
             
     with col2:

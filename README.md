@@ -2,40 +2,60 @@
   <img src="https://raw.githubusercontent.com/ajitonelsonn/chronic_disease_predictor/main/Images/1.png" alt="LAFAEK AI" width="400"/>
 </div>
 
-# Chronic Disease Risk Predictor 🏥
+# [Chronic Disease Risk Predictor 🏥 - Lōkahi Innovation](https://lablab.ai/event/lokahi-innovation-in-healthcare/lafaekai/chronic-disease-risk-predictor)
 
-**An advanced AI-powered tool for predicting chronic disease risks and providing personalized medical recommendations.**
+**An advanced AI-powered healthcare analytics platform for predicting chronic disease risks and providing personalized medical recommendations.**
 
----
+## 🌟 Key Features
 
-## 🌟 Features
-
-- **Risk Prediction**: Utilizes XGBoost model to predict chronic disease risks
-- **Interactive UI**: Modern, user-friendly interface built with Streamlit
-- **Real-time Analysis**: Instant risk assessment and recommendations
-- **AI Recommendations**: Personalized health recommendations using LLM (Together AI)
-
----
+- **Advanced Risk Prediction**: Utilizes XGBoost model with multi-condition analysis
+- **Interactive Dashboard**: Real-time analytics and population health insights
+- **AI-Powered Recommendations**: Personalized health guidance using Llama 3.2 model
+- **Secure Data Management**: MySQL integration for robust data storage
+- **Dynamic Visualizations**: Interactive charts and metrics using Plotly
+- **Modern UI**: Responsive design with Streamlit components
 
 ## 🔧 Technology Stack
 
-- **Frontend**: Streamlit (v1.40.2)
-- **Backend**: Python 3.9+
-- **ML Framework**: XGBoost (v2.1.3)
-- **Data Processing**: Pandas (v2.2.3), NumPy (v2.1.3)
-- **Model Serialization**: Joblib (v1.4.2)
-- **Recommendations**: Together AI Integration (Llama-3.2-3B-Instruct-Turbo)
+### Frontend
 
----
+- Streamlit (v1.40.2)
+- Plotly for interactive visualizations
+- Custom CSS styling
+
+### Backend
+
+- Python 3.8+
+- MySQL database - [CDRPredictor Database](database/)
+- Advanced logging system
+
+### AI/ML Components
+
+- XGBoost for risk prediction
+- Together AI (Llama-3.2-3B-Instruct-Turbo) for recommendations
+- Scikit-learn for data preprocessing
+
+### Data Processing
+
+- Pandas (v2.2.3)
+- NumPy (v2.1.3)
+- Joblib (v1.4.2)
+
+## 📊 Dashboard Features
+
+- **Real-time Analytics**: Monitor patient risk levels and trends
+- **Population Health Metrics**: Track key health indicators
+- **Condition Distribution**: Analyze prevalence of chronic conditions
+- **Advanced Filtering**: Customize views by demographics and conditions
+- **Interactive Charts**: Dynamic visualization of health trends
 
 ## 🚀 Getting Started
 
 ### Prerequisites
 
-Ensure you have:
-
 - Python 3.8+
-- pip
+- MySQL Server - [CDRPredictor Database](database/)
+- pip package manager
 
 ### Installation
 
@@ -61,13 +81,45 @@ Ensure you have:
    pip install -r requirements.txt
    ```
 
-4. **Configure API Keys**:  
-   Create `.streamlit/secrets.toml` and add your Together AI API key:
+4. **Configure Environment**:
+   Create `.streamlit/secrets.toml`:
 
    ```toml
    [api_keys]
-   togetherapi = "your_api_key_here"
+   togetherapi = "your_together_api_key"
+
+   [database]
+   db_host = "your_db_host"
+   db_username = "your_db_username"
+   db_password = "your_db_password"
+   db_name = "your_db_name"
+   db_port = "your_db_port"
    ```
+
+## 📁 Project Structure
+
+```plaintext
+chronic_disease_predictor/
+├── .streamlit/
+│   ├── config.toml
+│   └── secrets.toml
+├── components.py
+├── pages/
+│   ├── dashboard.py
+├── database/
+│   └── schema.sql
+├── model/
+│   ├── best_chronic_disease_model.joblib
+│   ├── feature_scaler.joblib
+│   └── label_encoder.joblib
+├── utils.py
+├── styles.py
+├── database.py
+├── model_utils.py
+├── recommend.py
+├── streamlit_app.py
+└── requirements.txt
+```
 
 ---
 
@@ -145,86 +197,54 @@ For detailed implementation and analysis, check our [model development notebook]
 
 ---
 
-## 📈 Workflow
+## 💻 Application Workflow
 
 ```mermaid
 graph TD
-    A[Patient Data Input] --> B[Data Preprocessing]
+    A[User Input] --> B[Data Processing]
     B --> C[Risk Assessment]
-    C --> D[XGBoost Model]
-    D --> E[Risk Prediction]
-    E --> F[LLM Analysis]
-    F --> G[Recommendations]
+    C --> D[Database Storage]
+    D --> E[Dashboard Analytics]
+    E --> F[Visualization]
+    C --> G[LLM Analysis]
+    G --> H[Medical Recommendations]
 
-    subgraph "Data Processing"
+    subgraph "Backend Processing"
     B
-    end
-
-    subgraph "ML Pipeline"
     C
     D
+    end
+
+    subgraph "Frontend Display"
     E
-    end
-
-    subgraph "AI Recommendations"
     F
-    G
+    H
     end
 ```
 
----
+## 🔒 Security Features
 
-## 📁 Project Structure
+- Secure database connections
+- API key management
+- Error logging and monitoring
+- Data validation and sanitization
 
-```plaintext
-chronic_disease_predictor/
-├── .streamlit/
-│   ├── config.toml
-│   └── secrets.toml
-├── create_model/
-│   └── Chronic_Disease_Risk_Prediction_Model.ipynb
-├── data/
-│   └── PRIMARY_CHRONIC_CONDITION_ROLLUP_DESC.csv
-├── model/
-│   ├── best_chronic_disease_model.joblib
-│   ├── feature_scaler.joblib
-│   └── label_encoder.joblib
-├── components.py
-├── model_utils.py
-├── recommend.py
-├── streamlit_app.py
-├── styles.py
-├── utils.py
-└── requirements.txt
-```
+## 📈 Dashboard Analytics
 
----
+The dashboard provides:
 
-## 🛠 Development
-
-1. **Start the Streamlit app**:
-
-   ```bash
-   streamlit run streamlit_app.py
-   ```
-
-2. **Access the app in your browser**:
-
-   Open [http://localhost:8501](http://localhost:8501).
-
----
+- Risk level distribution trends
+- Condition prevalence analysis
+- Demographic insights
+- Prediction confidence metrics
+- Historical data analysis
 
 ## 👥 Author
 
-**Ajito Nelson Lucio da Costa**
-
+**Ajito Nelson Lucio da Costa**  
 [![Facebook](https://img.shields.io/badge/Facebook-%40ajitonelsonn-blue)](https://facebook.com/kharu.kharu89/)  
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-%40ajitonelson-blue)](https://linkedin.com/in/ajitonelson)
 
----
-
 <div align="center">
-
-**Built with ❤️ in Timor-Leste 🇹🇱**
-
+<strong>Built with ❤️ in Timor-Leste 🇹🇱</strong>
 </div>

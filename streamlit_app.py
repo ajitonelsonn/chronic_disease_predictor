@@ -303,7 +303,7 @@ def main():
     <div class="custom-header">
         <h1 style='text-align: center; color: white;'>Chronic Disease Risk Predictor</h1>
         <p style='text-align: center; color: #e2e8f0;'>
-            AI-powered chronic disease risk assessment and personalized medical recommendations
+            AI-powered chronic disease risk assessment and personalized medical recommendations - Lōkahi Innovation
         </p>
     </div>
     """, unsafe_allow_html=True)
@@ -402,7 +402,7 @@ def main():
                             st.success(recommendations)
                         
                         if save_success:
-                            st.success("Prediction results saved successfully!")
+                            st.success("Prediction successfully!")
                     else:
                         st.error("Unable to generate recommendations. Please try again.")
             except Exception as e:
