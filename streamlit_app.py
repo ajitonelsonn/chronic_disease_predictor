@@ -1,12 +1,11 @@
 import streamlit as st
-import pandas as pd
 import time
 from styles import styles
 from utils import load_condition_mapping, get_condition_name
 from model_utils import load_models, prepare_features
 from components import navigation, footer
-from recommend import get_llm_recommendation, format_recommendations
-from database import save_prediction_to_database, get_saved_predictions
+from recommend import get_llm_recommendation
+from database import save_prediction_to_database
 import logging
 
 # Configure logging
@@ -203,7 +202,7 @@ def predict_conditions(features, model, scaler, label_encoder):
         status_text.text("Generating predictions...")
         progress_bar.progress(60)
         time.sleep(0.5)
-        prediction = model.predict(features_scaled)[0]
+        #prediction = model.predict(features_scaled)[0]
         probabilities = model.predict_proba(features_scaled)[0]
         
         # Process results
@@ -218,7 +217,7 @@ def predict_conditions(features, model, scaler, label_encoder):
         
         # Map condition codes to descriptions
         primary_condition = get_condition_name(top_3_conditions[0], condition_map)
-        top_3_mapped = [(get_condition_name(cond, condition_map), prob) 
+        top_3_mapped = [(get_condition_name(cond, condition_map), prob)
                        for cond, prob in zip(top_3_conditions, top_3_probs)]
         
         progress_bar.progress(100)
@@ -382,8 +381,8 @@ def main():
             try:
                 with st.spinner("Processing and saving results..."):
                     recommendations, save_success = process_and_save_results(
-                        results, 
-                        st.session_state.input_data, 
+                        results,
+                        st.session_state.input_data,
                         risk_level
                     )
                     

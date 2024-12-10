@@ -9,7 +9,6 @@ def load_models():
         model_data = joblib.load('model/best_chronic_disease_model.joblib')
         scaler = joblib.load('model/feature_scaler.joblib')
         label_encoder = joblib.load('model/label_encoder.joblib')
-        
         if isinstance(model_data, dict):
             model = model_data['model']
             feature_names = model_data.get('feature_names', get_feature_names())

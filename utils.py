@@ -1,12 +1,11 @@
 import pandas as pd
-import joblib
 
 def load_condition_mapping():
     """Load the condition code to description mapping"""
     try:
         mapping_df = pd.read_csv('data/PRIMARY_CHRONIC_CONDITION_ROLLUP_DESC.csv')
         return dict(zip(mapping_df['PCC_CODE'], mapping_df['PCC_ROLLUP']))
-    except Exception as e:
+    except Exception:
         return {}
 
 def get_condition_name(code, condition_map):

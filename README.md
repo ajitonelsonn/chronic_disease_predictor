@@ -1,6 +1,17 @@
 <div align="center">
-  <img src="https://raw.githubusercontent.com/ajitonelsonn/chronic_disease_predictor/main/Images/1.png" alt="LAFAEK AI" width="400"/>
+  <img src="/Images/1.png" alt="LAFAEK AI" width="400"/>
 </div>
+<p align="center">
+  <a href="https://chronicdiseasepredictor.streamlit.app">
+    <img src="https://img.shields.io/badge/Status-Active-green?style=for-the-badge&logo=statuspage&logoColor=white" alt="Project Status" />
+  </a>
+  <a href="https://chronicdiseasepredictor.streamlit.app">
+    <img src="https://img.shields.io/badge/Demo-Streamlit-red?style=for-the-badge&logo=streamlit&logoColor=white" alt="Demo" />
+  </a>
+  <a href="/create_model/Chronic_Disease_Risk_Prediction_Model.ipynb">
+    <img src="https://img.shields.io/badge/Open_in_Colab-F9AB00?style=for-the-badge&logo=googlecolab&color=525252" alt="Open In Colab" />
+  </a>
+</p>
 
 # [Chronic Disease Risk Predictor 🏥 - Lōkahi Innovation](https://lablab.ai/event/lokahi-innovation-in-healthcare/lafaekai/chronic-disease-risk-predictor)
 
@@ -125,6 +136,12 @@ chronic_disease_predictor/
 
 ## 🤖 Model Development
 
+<p align="center">
+  <img src="https://img.shields.io/badge/Records-37.5M-blue?style=for-the-badge&logo=database&logoColor=white" alt="Records" />
+  <img src="https://img.shields.io/badge/Patients-450K+-success?style=for-the-badge&logo=hospital&logoColor=white" alt="Patients" />
+  <img src="https://img.shields.io/badge/Accuracy-81.76%25-green?style=for-the-badge&logo=checkmarx&logoColor=white" alt="Accuracy" />
+</p>
+
 Detailed documentation of our model development process can be found in our [Jupyter Notebook](create_model/Chronic_Disease_Risk_Prediction_Model.ipynb) or [Create Model](create_model/).
 
 ### Data Processing
@@ -241,9 +258,20 @@ The dashboard provides:
 
 ## 👥 Author
 
-**Ajito Nelson Lucio da Costa**  
-[![Facebook](https://img.shields.io/badge/Facebook-%40ajitonelsonn-blue)](https://facebook.com/kharu.kharu89/)  
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-%40ajitonelson-blue)](https://linkedin.com/in/ajitonelson)
+<div align="center">
+<strong>Ajito Nelson Lucio da Costa</strong>
+</div>
+
+<p align="center">
+  <a href="https://facebook.com/kharu.kharu89">
+    <img src="https://img.shields.io/badge/LinkedIn-%40ajitonelson-blue" alt="Facebook" />
+  </a>
+  <a href="https://linkedin.com/in/ajitonelson">
+    <img src="https://img.shields.io/badge/LinkedIn-%40ajitonelson-greem" alt="LinkedIn" />
+  </a>
+</p>
+
+---
 
 <div align="center">
 <strong>Built with ❤️ in Timor-Leste 🇹🇱</strong>
