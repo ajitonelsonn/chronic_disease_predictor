@@ -1,7 +1,3 @@
-<div align="center">
-  <img src="https://raw.githubusercontent.com/ajitonelsonn/chronic_disease_predictor/main/Images/1.png" alt="LAFAEK AI" width="400"/>
-</div>
-
 # Chronic Disease Risk Prediction Model
 
 ## 🔬 Model Development Process
