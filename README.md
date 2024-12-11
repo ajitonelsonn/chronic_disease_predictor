@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="/Images/1.png" alt="LAFAEK AI" width="400"/>
+  <img src="/Images/1.png" alt="LAFAEK AI" width="300"/>
 </div>
 <p align="center">
   <a href="https://chronicdiseasepredictor.streamlit.app">
