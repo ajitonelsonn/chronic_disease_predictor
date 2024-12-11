@@ -311,6 +311,12 @@ def main():
     model, scaler, label_encoder, feature_names = load_models()
     if model is None:
         return
+    
+    # Show New Prediction button if currently showing prediction
+    if st.session_state.show_prediction:
+        if st.button("🔄 New Prediction", use_container_width=True):
+            st.session_state.show_prediction = False
+            st.rerun()
 
     # Show form only if not showing prediction
     if not st.session_state.show_prediction:
@@ -357,6 +363,7 @@ def main():
             }
             st.session_state.show_prediction = True
             st.rerun()
+    
     # Show prediction results if state is true
     if st.session_state.show_prediction and hasattr(st.session_state, 'input_data'):
         with st.spinner("📊 Analyzing patient data..."):
@@ -395,36 +402,7 @@ def main():
                             st.success(recommendations)
                         
                         if save_success:
-                            st.snow()
-                            st.markdown("""
-                    <style>
-                    .new-prediction-link {
-                        display: block;
-                        background-color: #6772e5;
-                        color: white !important;
-                        padding: 0.5rem 2rem;
-                        font-size: 1.1rem;
-                        font-weight: 500;
-                        border-radius: 0.5rem;
-                        border: none;
-                        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-                        transition: all 0.2s ease;
-                        width: 100%;
-                        margin-top: 2rem;
-                        text-align: center;
-                        text-decoration: none !important;
-                    }
-                    .new-prediction-link:hover {
-                        background-color: #5563d9;
-                        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-                        transform: translateY(-1px);
-                        text-decoration: none !important;
-                    }
-                    </style>
-                    <a href="/" class="new-prediction-link" target="_self">🔄 New Prediction</a>
-                """, unsafe_allow_html=True)
-
-                            
+                            st.snow()      
                     else:
                         st.error("Unable to generate recommendations. Please try again.")
             except Exception as e:
