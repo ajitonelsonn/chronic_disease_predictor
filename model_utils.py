@@ -2,13 +2,54 @@ import joblib
 import streamlit as st
 from utils import get_feature_names
 import pandas as pd
+import requests
+import tempfile
+import os
+
+def download_from_s3(url):
+    """Download a file from S3 URL and save it to a temporary file"""
+    try:
+        response = requests.get(url)
+        response.raise_for_status()  # Raise an error for bad responses
+        
+        # Create a temporary file
+        temp = tempfile.NamedTemporaryFile(delete=False)
+        temp.write(response.content)
+        temp.close()
+        
+        return temp.name
+    except Exception as e:
+        st.error(f"Error downloading from S3: {str(e)}")
+        return None
 
 def load_models():
-    """Load the saved model, scaler, and label encoder"""
+    """Load the saved model, scaler, and label encoder from S3"""
     try:
-        model_data = joblib.load('model/best_chronic_disease_model.joblib')
-        scaler = joblib.load('model/feature_scaler.joblib')
-        label_encoder = joblib.load('model/label_encoder.joblib')
+        # S3 URLs for the model files
+        model_url = "https://lafaekai.s3.us-east-1.amazonaws.com/LK_Model/chronic_disease_model.joblib"
+        scaler_url = "https://lafaekai.s3.us-east-1.amazonaws.com/LK_Model/scaler.joblib"
+        label_encoder_url = "https://lafaekai.s3.us-east-1.amazonaws.com/LK_Model/label_encoder.joblib"
+        
+        # Download files from S3
+        model_path = download_from_s3(model_url)
+        scaler_path = download_from_s3(scaler_url)
+        label_encoder_path = download_from_s3(label_encoder_url)
+        
+        if not all([model_path, scaler_path, label_encoder_path]):
+            return None, None, None, None
+        
+        # Load the files
+        model_data = joblib.load(model_path)
+        scaler = joblib.load(scaler_path)
+        label_encoder = joblib.load(label_encoder_path)
+        
+        # Clean up temporary files
+        for path in [model_path, scaler_path, label_encoder_path]:
+            try:
+                os.unlink(path)
+            except:
+                pass
+        
         if isinstance(model_data, dict):
             model = model_data['model']
             feature_names = model_data.get('feature_names', get_feature_names())
