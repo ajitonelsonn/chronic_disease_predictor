@@ -13,6 +13,19 @@
   </a>
 </p>
 
+## Team LAFAEKAI - Chronic Disease Risk Predictor (Top 6 Finalist)
+
+### 🎥 Watch the Final Presentations
+Check out the hackathon finale and presentations: [Watch on Twitch](https://www.twitch.tv/videos/2354044823)
+
+### 🌟 Hackathon Impact
+- **3,348** Total Participants
+- **135** Competing Teams
+- **46** AI Applications Developed
+- **2** Days of Innovation
+  
+---
+
 # [Chronic Disease Risk Predictor 🏥 - Lōkahi Innovation](https://lablab.ai/event/lokahi-innovation-in-healthcare/lafaekai/chronic-disease-risk-predictor)
 
 **An advanced AI-powered healthcare analytics platform for predicting chronic disease risks and providing personalized medical recommendations.**
