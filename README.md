@@ -273,6 +273,3 @@ The dashboard provides:
 
 ---
 
-<div align="center">
-<strong>Built with ❤️ in Timor-Leste 🇹🇱</strong>
-</div>
