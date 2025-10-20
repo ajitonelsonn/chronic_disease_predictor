@@ -256,20 +256,5 @@ The dashboard provides:
 - Prediction confidence metrics
 - Historical data analysis
 
-## 👥 Author
-
-<div align="center">
-<strong>Ajito Nelson Lucio da Costa</strong>
-</div>
-
-<p align="center">
-  <a href="https://facebook.com/kharu.kharu89">
-    <img src="https://img.shields.io/badge/LinkedIn-%40ajitonelson-blue" alt="Facebook" />
-  </a>
-  <a href="https://linkedin.com/in/ajitonelson">
-    <img src="https://img.shields.io/badge/LinkedIn-%40ajitonelson-greem" alt="LinkedIn" />
-  </a>
-</p>
-
 ---
 
