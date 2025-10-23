@@ -239,16 +239,5 @@ graph TD
     end
 ```
 
-
-## 📈 Dashboard Analytics
-
-The dashboard provides:
-
-- Risk level distribution trends
-- Condition prevalence analysis
-- Demographic insights
-- Prediction confidence metrics
-- Historical data analysis
-
 ---
 
